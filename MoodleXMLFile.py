@@ -33,96 +33,29 @@ class MoodleQuestion:
     def createNameNode(self):
         return XMLNode('name',{},[XMLNode('text',{},[],self.values['name'])])
 
-
-
-    # Represents a Moodle XML True False Question, the first question type tried
-    # Values are stored in a dictionary. Attributes should be added to values
-    # in order for question to be fully filled out
-    # Possible values with description:
-    #
-    # name
-    #       name of the question
-    # defaultQuestionGrade
-    #       default grade for the question. Typically 1
-    #       TODO, elaborate on this!
-    # questionText
-    #       moodle question text, should be passed in as a string, properly
-    #       formatted for moodle #TODO: Expand on this concept!
-    # questionTextType
-    #       should be set to one of the following strings:
-    #       moodle_auto_format
-    #       html
-    #       plain_text
-    #       markdown
-    # image
-    #       NOTE: CURRENTLY UNSUPPORTED. TODO: Figure out how this works
-    # generalFeedback
-    #       string holding information for general feedback from the problem
-    # answer
-    #       true/false boolean representing the correct answer
-    # trueFeedback
-    #       feedback given for the response true, in string format
-    # falseFeedback
-    #       see trueFeedback
-    #
-
-class MoodleXMLTrueFalseQuestion(MoodleQuestion):
-    def __init__(self,name,correctAnswer,defaultQuestionGrade='1'):
-        MoodleQuestion.__init__(self,name)
-        self.values['correctAnswer'] = correctAnswer
-        self.values['defaultQuestionGrade'] = defaultQuestionGrade
-        self.values['questionTextType'] = 'moodle_auto_format'
-        self.values['questionText'] = ''
-        self.values['generalFeedback'] = ''
-        self.values['trueFeedback'] = ''
-        self.values['falseFeedback'] = ''
-        self.defaultQuestionGrade=defaultQuestionGrade
-        self.nodes = []
-
     def createQuestionTextNode(self):
         return XMLNode('questiontext',
-            {'format':self.values['questionTextType']},
-            [XMLNode('text',{},[],self.values['questionText'],True)])
+            {'format':self.values['questiontexttype']},
+            [XMLNode('text',{},[],self.values['questiontext'],True)])
 
     def createImageNode(self):
         return XMLNode('image')
 
     def createGeneralFeedbackNode(self):
         return XMLNode('generalfeedback',{},
-            [XMLNode('text',{},[],self.values['generalFeedback'],True)])
+            [XMLNode('text',{},[],self.values['generalfeedback'],True)])
 
     def createDefaultGradeNode(self):
-        return XMLNode('defaultgrade',{},[],self.values['defaultQuestionGrade'])
+        return XMLNode('defaultgrade',{},[],self.values['defaultgrade'])
 
     def createPenaltyNode(self):
-        return XMLNode('penalty',{},[],'1')
+        return XMLNode('penalty',{},[],self.values['penalty'])
 
     def createHiddenNode(self):
-        return XMLNode('hidden',{},[],'0')
+        return XMLNode('hidden',{},[],self.values['hidden'])
 
     def createShuffleAnswersNode(self):
-        return XMLNode('hidden',{},[],'0')
-
-    def createTrueAnswerNode(self):
-        frac = "100"
-        if not self.values['correctAnswer']:
-            frac = "0"
-        return XMLNode('answer',{'fraction':frac},
-            [XMLNode('text',{},[],'true'),
-             XMLNode('feedback',{},
-                 [XMLNode('text',{},[],self.values['trueFeedback'],True)])])
-
-    def createFalseAnswerNode(self):
-        frac = "0"
-        if not self.values['correctAnswer']:
-            frac = "100"
-        return XMLNode('answer',{'fraction':frac},
-            [XMLNode('text',{},[],'false'),
-             XMLNode('feedback',{},
-                 [XMLNode('text',{},[],self.values['falseFeedback'],True)])])
-
-    def createAnswersNodes(self):
-        return [self.createTrueAnswerNode(),self.createFalseAnswerNode()]
+        return XMLNode('shuffleanswers',{},[],self.values['shuffleanswers'])
 
     def prepareNodes(self):
         self.nodes = []
@@ -134,6 +67,77 @@ class MoodleXMLTrueFalseQuestion(MoodleQuestion):
         self.nodes.append(self.createPenaltyNode())
         self.nodes.append(self.createHiddenNode())
         self.nodes.append(self.createShuffleAnswersNode())
+
+    # Represents a Moodle XML True False Question, the first question type tried
+    # Values are stored in a dictionary. Attributes should be added to values
+    # in order for question to be fully filled out
+    # Possible values with description:
+    #
+    # name
+    #       name of the question
+    # defaultgrade
+    #       default grade for the question. Typically 1
+    #       TODO, elaborate on this!
+    # questiontext
+    #       moodle question text, should be passed in as a string, properly
+    #       formatted for moodle #TODO: Expand on this concept!
+    # questiontexttype
+    #       should be set to one of the following strings:
+    #       moodle_auto_format
+    #       html
+    #       plain_text
+    #       markdown
+    # image
+    #       NOTE: CURRENTLY UNSUPPORTED. TODO: Figure out how this works
+    # generalfeedback
+    #       string holding information for general feedback from the problem
+    # answer
+    #       true/false boolean representing the correct answer
+    # truefeedback
+    #       feedback given for the response true, in string format
+    # falsefeedback
+    #       see truefeedback
+    #
+
+class MoodleXMLTrueFalseQuestion(MoodleQuestion):
+    def __init__(self,name,correctanswer,defaultgrade='1'):
+        MoodleQuestion.__init__(self,name)
+        self.values['questiontexttype'] = 'moodle_auto_format'
+        self.values['questiontext'] = ''
+        self.values['generalfeedback'] = ''
+        self.values['defaultgrade'] = defaultgrade
+        self.values['penalty'] = '1'
+        self.values['hidden'] = '0'
+        self.values['shuffleanswers'] = '0'
+        self.values['correctanswer'] = correctanswer
+        self.values['truefeedback'] = ''
+        self.values['falsefeedback'] = ''
+        self.defaultgrade=defaultgrade
+        self.nodes = []
+
+    def createTrueAnswerNode(self):
+        frac = "100"
+        if not self.values['correctanswer']:
+            frac = "0"
+        return XMLNode('answer',{'fraction':frac},
+            [XMLNode('text',{},[],'true'),
+             XMLNode('feedback',{},
+                 [XMLNode('text',{},[],self.values['truefeedback'],True)])])
+
+    def createFalseAnswerNode(self):
+        frac = "0"
+        if not self.values['correctanswer']:
+            frac = "100"
+        return XMLNode('answer',{'fraction':frac},
+            [XMLNode('text',{},[],'false'),
+             XMLNode('feedback',{},
+                 [XMLNode('text',{},[],self.values['falsefeedback'],True)])])
+
+    def createAnswersNodes(self):
+        return [self.createTrueAnswerNode(),self.createFalseAnswerNode()]
+
+    def prepareNodes(self):
+        super(MoodleXMLTrueFalseQuestion,self).prepareNodes()
         for answer in self.createAnswersNodes():
             self.nodes.append(answer)
 
@@ -215,10 +219,10 @@ if __name__ == '__main__':
     print('Hello World!')
 
     q1 = MoodleXMLTrueFalseQuestion('TestAF',False)
-    q1.values['questionText']='<div>Just doing some testing</div>\n<div>&nbsp;</div>\n<div><strong>asdfasdf</strong></div>'
-    q1.values['generalFeedback']='<div>This is on the first line.</div>\n<div>This is on a second line.</div>\n<div>&nbsp;</div>\n<div><strong>This is on the fourth line, and bold.</strong></div>'
-    q1.values['falseFeedback']='<div>This is on the first line.</div>\n<div>This is on a second line.</div>\n<div>&nbsp;</div>\n<div><strong>This is on the fourth line, and bold.</strong></div>'
-    q1.values['trueFeedback']='<div>This is on the first line.</div>\n<div>This is on a second line.</div>\n<div>&nbsp;</div>\n<div><strong>This is on the fourth line, and bold.</strong></div>'
+    q1.values['questiontext']='<div>Just doing some testing</div>\n<div>&nbsp;</div>\n<div><strong>asdfasdf</strong></div>'
+    q1.values['generalfeedback']='<div>This is on the first line.</div>\n<div>This is on a second line.</div>\n<div>&nbsp;</div>\n<div><strong>This is on the fourth line, and bold.</strong></div>'
+    q1.values['falsefeedback']='<div>This is on the first line.</div>\n<div>This is on a second line.</div>\n<div>&nbsp;</div>\n<div><strong>This is on the fourth line, and bold.</strong></div>'
+    q1.values['truefeedback']='<div>This is on the first line.</div>\n<div>This is on a second line.</div>\n<div>&nbsp;</div>\n<div><strong>This is on the fourth line, and bold.</strong></div>'
     c1 = MoodleXMLCategory()
     temp = c1.getCategoryNameList()
     temp.append('CS196TestQuestionsGenerated')
